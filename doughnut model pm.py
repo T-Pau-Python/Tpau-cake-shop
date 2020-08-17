@@ -30,13 +30,6 @@ starting_conditions = {
     #"business_cost_max": 15000,
 }
 
-variables = {
-    "jobs_per_acquired_customer": 1.01,
-    "per_employee_monthly_cost": 1.01,
-    "price_per_skill_sprint": 1.01
-
-}
-
 months = [
         "Jan 21","Feb 21","Mar 21","Apr 21",
         "May 21","Jun 21","Jul 21","Aug 21",
@@ -52,7 +45,7 @@ def run_month(conditions, month):
     conditions["month"] = month
     
     #Tpau calculates how many doughnuts sold
-    doughnuts_sold_monthly = conditions["footfall"]* conditions["number_of_employees"]
+    doughnuts_sold_monthly = conditions["footfall"] * conditions["number_of_employees"]
 
     #Tpau calculates margin per product
     margin_per_product = conditions["product_sell_price"] - conditions["ingredient_cost_per_product"]
@@ -72,12 +65,6 @@ def run_month(conditions, month):
     # Put the employees to work and calculate revenue
     doughnut_capacity = conditions["oven_capacity"] * conditions["number_of_employees"]
     revenue = 0
-
-#Tpau assumes this is to gauge how your revenue and completed doughnut count is affected
-    while doughnut_capacity >= 1:
-        revenue += conditions["product_sell_price"]
-    
-    conditions["revenue"] = revenue
     
     # Calculate monthly costs
     total_monthly_costs = 0
