@@ -7,27 +7,38 @@ from math import floor
    
 
 starting_conditions = {
+    "month": "",
+    "number_of_employees": 2,
+    "rental_space_cost": 1000,
+    "rental_oven_cost": 100,
+    "oven_capacity": 30000,
     "capital": 250000,
-    "rental_space_cost" : 1000,
-    "rental_oven_cost" : 100,
-    "oven_capacity" : 30000,
-    "ingredient_cost_per_product": 0.5,
+    "ingredient_cost_per_doughnut": 0.5,
+    "ingredient_cost_per_cronut": 0.5,
     "marketing_cost": 200,
-    "product_sell_price" : 3.5, 
-    "number_of_employees" : 2,
-    "footfall" : 10000,
-    "doughnuts_sold_per_acquired_customer" : 1,
-    "per_employee_monthly_cost" : 3000,
-    "employee_min_jobs_per_month" : 2,
-    "employee_max_jobs_per_month" : 4,
-    "new_customers" : 0,
-    "total_monthly_costs" : 0,
-    "monthly_costs" : {},
-    "monthly_balance" : 0,
-    "revenue" : 0 ,
-    "month" : "",
+    "doughnut_sell_price": 3.5,
+    "cronut_sell_price": 4, 
+    "footfall": 10000,
+    "per_employee_monthly_cost": 3000,
+    "monthly_balance": 0,
+    "revenue": 0,
+    "doughnuts_made_monthly": 0,
+    "cronuts_made_monthly": 0,
+    "proportion_doughnut": 0.5,
+    "proportion_cronut": 0.5,
+    "employee_selling_capacity": 10000,
+    "interest_in_dough": 0.7,
+    "total_sales_capacity": 0,
+    "total_market": 0
+    
     #"business_cost_min": 5000, 
     #"business_cost_max": 15000,
+}
+
+variables = {
+    "ingredient_cost_per_product" : 0.99
+
+
 }
 
 months = [
@@ -43,35 +54,46 @@ monthy_output = []
 
 def run_month(conditions, month):    
     conditions["month"] = month
+
+    #footfall that month
+    conditions["footfall_that_month"] = conditions["footfall"] * random.uniform(0.5, 0.7)
+
+    #'nuts made
+    conditions["doughnuts_made_monthly"] = conditions["proportion_doughnut"] * conditions["oven_capacity"]
+    conditions["cronuts_made_monthly"] = conditions["proportion_cronut"] * conditions["oven_capacity"]
     
     #Tpau calculates how many doughnuts sold
-    doughnuts_sold_monthly = conditions["footfall"] * conditions["number_of_employees"]
+    conditions["total_sales_capacity"] = conditions["employee_selling_capacity"] * conditions["number_of_employees"]
+    conditions["total_market"] = conditions["footfall_that_month"] * conditions["interest_in_dough"]
+    conditions["doughnuts_sold_monthly"] = conditions["employee_selling_capacity"] * conditions["number_of_employees"] * conditions["proportion_doughnut"]
+    conditions["cronuts_sold_monthly"] = conditions["employee_selling_capacity"] * conditions["number_of_employees"] * conditions["proportion_cronut"]
 
     #Tpau calculates margin per product
-    margin_per_product = conditions["product_sell_price"] - conditions["ingredient_cost_per_product"]
+    conditions["margin_per_doughnut"] = conditions["doughnut_sell_price"] - conditions["ingredient_cost_per_doughnut"]
+    conditions["margin_per_cronut"] = conditions["cronut_sell_price"] - conditions["ingredient_cost_per_cronut"]
 
     #Tpau caulculates monthly wages
-    monthly_wages = conditions["per_employee_monthly_cost"] * conditions["number_of_employees"]
+    conditions["monthly_wages"] = conditions["per_employee_monthly_cost"] * conditions["number_of_employees"]
 
+    #Tpau revenueeee
+    conditions["revenue"] += (conditions["doughnuts_sold_monthly"]* conditions["doughnut_sell_price"]) + (conditions["cronuts_sold_monthly"]* conditions["cronut_sell_price"])
+    
     #Tpau calculates total cost
-    total_costs = monthly_wages + conditions["rental_space_cost"] + conditions["rental_oven_cost"] + conditions["ingredient_cost_per_product"] * doughnuts_sold_monthly
+    conditions["total_costs"] = conditions["monthly_wages"] + conditions["rental_space_cost"] + conditions["rental_oven_cost"] + conditions["ingredient_cost_per_doughnut"] + conditions["ingredient_cost_per_cronut"] * conditions["doughnuts_sold_monthly"]
 
-    #Tpau calculates Turnover
-    turnover = margin_per_product * doughnuts_sold_monthly
+    #Tpau calculates Turnover aka how much profit you make per nut x nuts sold QUESTION do the two turnover conditions need to be separate or can we use order of operations ()
+    conditions["turnover"] = conditions["margin_per_doughnut"] * conditions["doughnuts_sold_monthly"] + conditions["margin_per_cronut"] * conditions["cronuts_sold_monthly"]
 
     #Tpau calculates balance 
-    monthly_balance = turnover - total_costs
+    conditions["monthly_balance"] = conditions["turnover"] - conditions["total_costs"]
 
     # Put the employees to work and calculate revenue
-    doughnut_capacity = conditions["oven_capacity"] * conditions["number_of_employees"]
-    revenue = 0
+    conditions["doughnut_capacity"] = conditions["oven_capacity"] * conditions["number_of_employees"]
     
-    # Calculate monthly costs
-    total_monthly_costs = 0
-    for cost in conditions["monthly_costs"].values():
-        total_monthly_costs += cost
-    conditions["total_monthly_costs"] = total_monthly_costs
+    conditions["capital"] += conditions["monthly_balance"]
 
+    conditions["ingredient_cost_per_cronut"] *= variables["ingredient_cost_per_product"]
+    conditions["ingredient_cost_per_doughnut"] *= variables["ingredient_cost_per_product"]
 
     print(print(json.dumps(conditions, indent=4, sort_keys=True)))
     return conditions
