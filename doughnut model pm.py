@@ -17,7 +17,8 @@ starting_conditions = {
     "ingredient_cost_per_doughnut": 0.5,
     "marketing_cost": 200,
     "doughnut_sell_price": 3.5,
-    "footfall": 10000,
+    "doughnuts_per_person": 6,
+    "footfall": 30000,
     "per_employee_monthly_cost": 3000,
     "monthly_balance": 0,
     "revenue": 0
@@ -49,8 +50,11 @@ monthy_output = []
 def run_month(conditions, month):    
     conditions["month"] = month
 
-    # nuts people could buy (demand) where random.uniform is how likely they are to buy ‘nuts, and random.randit for number bought
-    conditions["demand_that_month"] = conditions["footfall"] * random.uniform(0.5, 1.0) * random.randint(1, 12)
+    # proportion of footfall that will buy
+    conditions["will_buy"] = conditions["footfall"] * random.uniform(0.7, 1.0)
+
+    # nuts people could buy (demand), based on proportion that will buy * how many they buy on average
+    conditions["demand_that_month"] = conditions["will_buy"] * conditions["doughnuts_per_person"]
 
     # The number of ‘nuts that we can sell
     # check def of "doughnuts_made_monthly". delete proportions too. 
@@ -64,11 +68,6 @@ def run_month(conditions, month):
         conditions["actual_sold_monthly"] = conditions["doughnuts_capacity_monthly"]
     else:
         conditions["actual_sold_monthly"] = conditions["demand_that_month"]
-
-    # how do we apply oven to the next month, so that costs and capacity increase that month too? 
-    if conditions["demand_v_capacity"] > 6000: 
-        print("new oven purchased")
-        conditions["number_of_ovens"] += 1
 
     #Tpau calculates margin per product
     conditions["margin_per_doughnut"] = conditions["doughnut_sell_price"] - conditions["ingredient_cost_per_doughnut"]
@@ -89,7 +88,10 @@ def run_month(conditions, month):
     #Tpau calculates balance 
     conditions["monthly_balance"] = conditions["margin_doughnuts_monthly"] - conditions["total_fixed_costs"]
 
-
+    # how do we apply oven to the next month, so that costs and capacity increase that month too? 
+    if conditions["demand_v_capacity"] > 6000: 
+        print("new oven purchased")
+        conditions["number_of_ovens"] += 1
 
 
     #conditions["capital"] += conditions["monthly_balance"]
