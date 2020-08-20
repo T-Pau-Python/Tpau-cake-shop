@@ -4,6 +4,12 @@ import copy
 import random
 from math import floor
 
+Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec
+Average temperature,5.2,5.3,7.6,9.9,13.3,16.4,18.7,18.5,15.7,12,8,5.5
+rainy days,11.1,8.5,9.3,9.1,8.8,8.2,7.7,7.5,8.1,10.8,10.3,10.2
+
+#Paula COME BACK AND FINISH THIS
+
    
 
 starting_conditions = {
@@ -41,19 +47,18 @@ variables = {
 
 }
 
-months = [
-        "Jan 21","Feb 21","Mar 21","Apr 21",
-        "May 21","Jun 21","Jul 21","Aug 21",
-        "Sep 21","Oct 21","Nov 21","Dec 21",
-        "Jan 22","Feb 22","Mar 22","Apr 22",
-        "May 22","Jun 22","Jul 22","Aug 22",
-        "Sep 22","Oct 22","Nov 22","Dec 22"
-        ]
 
 monthy_output = []
 
-def run_month(conditions, month):    
-    conditions["month"] = month
+def weather_calculator(temp, rainy_days)
+    return 
+
+def run_month(conditions, month_dict): 
+   
+    #Under here, we have to handle this dictionary. it's not a string anymore
+    conditions["month"] = month_dict["month"]
+
+    weather_weighting = weather_calculator(month_dict["temp"], month_dict["rainy_days"])
 
     #footfall that month
     conditions["footfall_that_month"] = conditions["footfall"] * random.uniform(0.5, 0.7)
@@ -98,10 +103,19 @@ def run_month(conditions, month):
     print(print(json.dumps(conditions, indent=4, sort_keys=True)))
     return conditions
 
+months = [{"month_name": "Jan", "temp": 5.2, "rainy_days": 11.1}
+{"month_name": "Feb", "temp": 5.3, "rainy_days": 8.5}
+{"month_name": "Mar", "temp": 7.6, "rainy_days": 9.3}
+{"month_name": "Apr", "temp": 5.3, "rainy_days": 8.5}
+{"month_name": "May", "temp": , "rainy_days": 8.5}
+]
+
 output = []
 input_conditions = starting_conditions
+#Now we have to iterate over a dictionary, not a list
 for month in months:
     input_conditions = run_month(input_conditions, month)
+    #Write the updates to ledger
     output.append(copy.deepcopy(input_conditions))
 
 with open('doughnutoutput.csv', 'w', encoding='utf8', newline='') as output_file:
