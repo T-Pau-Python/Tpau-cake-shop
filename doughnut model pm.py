@@ -4,13 +4,6 @@ import copy
 import random
 from math import floor
 
-Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec
-Average temperature,5.2,5.3,7.6,9.9,13.3,16.4,18.7,18.5,15.7,12,8,5.5
-rainy days,11.1,8.5,9.3,9.1,8.8,8.2,7.7,7.5,8.1,10.8,10.3,10.2
-
-#Paula COME BACK AND FINISH THIS
-
-   
 
 starting_conditions = {
     "month": "",
@@ -44,14 +37,33 @@ starting_conditions = {
 variables = {
     "ingredient_cost_per_product" : 0.99
 
-
 }
 
 
 monthy_output = []
 
-def weather_calculator(temp, rainy_days)
-    return 
+months = [
+    {"month_name": "Jan", "temp": 5.2, "rainy_days": 11.1},
+    {"month_name": "Feb", "temp": 5.3, "rainy_days": 8.5},
+    {"month_name": "Mar", "temp": 7.6, "rainy_days": 9.3},
+    {"month_name": "Apr", "temp": 9.9, "rainy_days": 8.5},
+    {"month_name": "May", "temp": 13.3, "rainy_days": 8.8},
+    {"month_name": "Jun", "temp": 16.4, "rainy_days": 8.2},
+    {"month_name": "Jul", "temp": 18.7, "rainy_days": 7.7},
+    {"month_name": "Aug", "temp": 18.5, "rainy_days": 7.5},
+    {"month_name": "Sep", "temp": 15.7, "rainy_days": 8.1},
+    {"month_name": "Oct", "temp": 12.0, "rainy_days": 10.8},
+    {"month_name": "Nov", "temp": 8.0, "rainy_days": 10.3},
+    {"month_name": "Dec", "temp": 5.5, "rainy_days": 10.2},
+]
+
+
+def weather_calculator(temp, rainy_days):
+# do stuff here. invalid syntax here.
+
+    # rain effect on liklihood to buy. Obvs it doesnt like this unfinished code. 
+    weighting =
+    return weighting
 
 def run_month(conditions, month_dict): 
    
@@ -103,12 +115,6 @@ def run_month(conditions, month_dict):
     print(print(json.dumps(conditions, indent=4, sort_keys=True)))
     return conditions
 
-months = [{"month_name": "Jan", "temp": 5.2, "rainy_days": 11.1}
-{"month_name": "Feb", "temp": 5.3, "rainy_days": 8.5}
-{"month_name": "Mar", "temp": 7.6, "rainy_days": 9.3}
-{"month_name": "Apr", "temp": 5.3, "rainy_days": 8.5}
-{"month_name": "May", "temp": , "rainy_days": 8.5}
-]
 
 output = []
 input_conditions = starting_conditions
