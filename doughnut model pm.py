@@ -13,29 +13,20 @@ starting_conditions = {
     "oven_capacity": 30000,
     "capital": 250000,
     "ingredient_cost_per_doughnut": 0.5,
-    "ingredient_cost_per_cronut": 0.5,
     "marketing_cost": 200,
     "doughnut_sell_price": 3.5,
-    "cronut_sell_price": 4, 
     "footfall": 10000,
+    "doughnuts_per_person": 6,
     "per_employee_monthly_cost": 3000,
     "monthly_balance": 0,
     "revenue": 0,
-    "doughnuts_made_monthly": 0,
-    "cronuts_made_monthly": 0,
-    "proportion_doughnut": 0.5,
-    "proportion_cronut": 0.5,
-    "employee_selling_capacity": 10000,
-    "interest_in_dough": 0.7,
-    "total_sales_capacity": 0,
-    "total_market": 0
     
     #"business_cost_min": 5000, 
     #"business_cost_max": 15000,
 }
 
 variables = {
-    "ingredient_cost_per_product" : 0.99
+    # "ingredient_cost_per_product" : 0.99
 
 }
 
@@ -59,9 +50,14 @@ months = [
 
 
 def weather_calculator(temp, rainy_days):
-# do stuff here. invalid syntax here.
+# do stuff here. invalid syntax here
+# we also use 'weather_weighting = weather_calculator(month_dict["temp"], month_dict["rainy_days"])' below in the next section. Why do we need both?
 
-    # rain effect on liklihood to buy. Obvs it doesnt like this unfinished code. 
+    # temp and rain effect on number bought. Obvs it doesnt like this unfinished code. This is where we need linear regression shizzle. 
+    # will it be a diff multiplier for both variables? Or combined? Can't remember our rain factor?
+
+    # Number bought = -0.06667* Temp + 2.5
+
     weighting =
     return weighting
 
@@ -72,44 +68,65 @@ def run_month(conditions, month_dict):
 
     weather_weighting = weather_calculator(month_dict["temp"], month_dict["rainy_days"])
 
-    #footfall that month
-    conditions["footfall_that_month"] = conditions["footfall"] * random.uniform(0.5, 0.7)
+
+    # The number of ‘nuts that we can sell
+    # check def of "doughnuts_made_monthly". delete proportions too. 
+    conditions["doughnuts_capacity_monthly"] = conditions["number_of_ovens"] * conditions["oven_capacity"]
+
+    # proportion of footfall that will buy
+    conditions["will_buy"] = conditions["footfall"] * random.uniform(0.7, 1.0)
+    
+    # nuts people could buy (demand), based on proportion that will buy * how many they buy on average
+    conditions["demand_that_month"] = conditions["will_buy"] * conditions["doughnuts_per_person"]
 
     #'nuts made
     conditions["doughnuts_made_monthly"] = conditions["proportion_doughnut"] * conditions["oven_capacity"]
-    conditions["cronuts_made_monthly"] = conditions["proportion_cronut"] * conditions["oven_capacity"]
+
     
-    #Tpau calculates how many doughnuts sold
-    conditions["total_sales_capacity"] = conditions["employee_selling_capacity"] * conditions["number_of_employees"]
-    conditions["total_market"] = conditions["footfall_that_month"] * conditions["interest_in_dough"]
-    conditions["doughnuts_sold_monthly"] = conditions["employee_selling_capacity"] * conditions["number_of_employees"] * conditions["proportion_doughnut"]
-    conditions["cronuts_sold_monthly"] = conditions["employee_selling_capacity"] * conditions["number_of_employees"] * conditions["proportion_cronut"]
+    # We’ll begin with one oven, and if demand is +6000 of capicity, then new oven. this comes later in the order.
+    conditions["demand_v_capacity"] = conditions["demand_that_month"] - conditions["doughnuts_capacity_monthly"]
+
+    # The actual number sold per month
+    if conditions["demand_v_capacity"] > conditions["doughnuts_capacity_monthly"]:
+        conditions["actual_sold_monthly"] = conditions["doughnuts_capacity_monthly"]
+    else:
+        conditions["actual_sold_monthly"] = conditions["demand_that_month"]
+
+
 
     #Tpau calculates margin per product
     conditions["margin_per_doughnut"] = conditions["doughnut_sell_price"] - conditions["ingredient_cost_per_doughnut"]
-    conditions["margin_per_cronut"] = conditions["cronut_sell_price"] - conditions["ingredient_cost_per_cronut"]
+
+    #Tpau calculates Turnover aka how much profit you make per nut x nuts sold QUESTION do the two turnover conditions need to be separate or can we use order of operations ()
+    conditions["margin_doughnuts_monthly"] = conditions["margin_per_doughnut"] * conditions["actual_sold_monthly"]
+
+    #Tpau revenueeee
+    conditions["revenue"] += (conditions["actual_sold_monthly"] * conditions["doughnut_sell_price"])
 
     #Tpau caulculates monthly wages
     conditions["monthly_wages"] = conditions["per_employee_monthly_cost"] * conditions["number_of_employees"]
 
-    #Tpau revenueeee
-    conditions["revenue"] += (conditions["doughnuts_sold_monthly"]* conditions["doughnut_sell_price"]) + (conditions["cronuts_sold_monthly"]* conditions["cronut_sell_price"])
-    
-    #Tpau calculates total cost
-    conditions["total_costs"] = conditions["monthly_wages"] + conditions["rental_space_cost"] + conditions["rental_oven_cost"] + conditions["ingredient_cost_per_doughnut"] + conditions["ingredient_cost_per_cronut"] * conditions["doughnuts_sold_monthly"]
+    #Tpau caulculates monthly oven cost
+    conditions["total_monthly_oven_cost"] = conditions["rental_oven_cost"] * conditions["number_of_ovens"]
 
-    #Tpau calculates Turnover aka how much profit you make per nut x nuts sold QUESTION do the two turnover conditions need to be separate or can we use order of operations ()
-    conditions["turnover"] = conditions["margin_per_doughnut"] * conditions["doughnuts_sold_monthly"] + conditions["margin_per_cronut"] * conditions["cronuts_sold_monthly"]
+    #Tpau calculates total fixed costs
+    conditions["total_fixed_costs"] = conditions["monthly_wages"] + conditions["rental_space_cost"] + conditions["total_monthly_oven_cost"] + conditions["marketing_cost"]
 
     #Tpau calculates balance 
-    conditions["monthly_balance"] = conditions["turnover"] - conditions["total_costs"]
+    conditions["monthly_balance"] = conditions["margin_doughnuts_monthly"] - conditions["total_fixed_costs"]
 
-    # Put the employees to work and calculate revenue
-    conditions["doughnut_capacity"] = conditions["oven_capacity"] * conditions["number_of_employees"]
+    #Tpau calculates Turnover aka how much profit you make per nut x nuts sold QUESTION do the two turnover conditions need to be separate or can we use order of operations ()
+    conditions["turnover"] = conditions["margin_per_doughnut"] * conditions["doughnuts_sold_monthly"]
+
+
+    # how do we apply oven to the next month, so that costs and capacity increase that month too? 
+    if conditions["demand_v_capacity"] > 6000: 
+        print("new oven purchased")
+        conditions["number_of_ovens"] += 1
+
     
     conditions["capital"] += conditions["monthly_balance"]
 
-    conditions["ingredient_cost_per_cronut"] *= variables["ingredient_cost_per_product"]
     conditions["ingredient_cost_per_doughnut"] *= variables["ingredient_cost_per_product"]
 
     print(print(json.dumps(conditions, indent=4, sort_keys=True)))
