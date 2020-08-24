@@ -2,19 +2,18 @@ import json
 import csv
 import copy
 import random
-import sklearn.linear_model
-import LinearRegression
 from math import floor
 
 
 starting_conditions = {
     "month": "",
     "number_of_employees": 2,
+    "number_of_ovens": 1,
     "rental_space_cost": 1000,
     "rental_oven_cost": 100,
     "oven_capacity": 30000,
     "capital": 250000,
-    "ingredient_cost_per_doughnut": 0.5,
+    "ingredient_cost_per_product": 0.5,
     "marketing_cost": 200,
     "doughnut_sell_price": 3.5,
     "footfall": 10000,
@@ -47,33 +46,31 @@ months = [
     {"month_name": "Sep", "temp": 15.7, "rainy_days": 8.1},
     {"month_name": "Oct", "temp": 12.0, "rainy_days": 10.8},
     {"month_name": "Nov", "temp": 8.0, "rainy_days": 10.3},
-    {"month_name": "Dec", "temp": 5.5, "rainy_days": 10.2},
+    {"month_name": "Dec", "temp": 5.5, "rainy_days": 10.2}
 ]
 
 
 def weather_calculator(temp, rainy_days):
-# do stuff here. invalid syntax here
 # we also use 'weather_weighting = weather_calculator(month_dict["temp"], month_dict["rainy_days"])' below in the next section. Why do we need both?
 
     # temp and rain effect on number bought. Obvs it doesnt like this unfinished code. This is where we need linear regression shizzle. 
     # will it be a diff multiplier for both variables? Or combined? Can't remember our rain factor?
-
-    temperature_y = -0.06667* months["temp"] + 2.5
     
-    #rainy_days_y = 1.3 * months["rainy days"] * actual_sold_monthly?
+    temperature_y = -0.06667 * month_dict["temp"] + 2.5
+    
+    rainy_days_y = month_dict["rainy days"] / 30 * 1.3 * actual_sold_monthly
 
-    lm = LinearRegression()
-    model = lm.fit(,)
+    weather_weighting = 0.6 * rainy_days_y * 0.4 * temperature_y
 
-   #weighting = 
-
-    return weighting
+    return
 
 def run_month(conditions, month_dict): 
    
     #Under here, we have to handle this dictionary. it's not a string anymore
-    conditions["month"] = month_dict["month"]
+    conditions["month"] = month_dict["month_name"]
+    #This is how we've unpacked the two values 
 
+    #TODO use this fucking variable
     weather_weighting = weather_calculator(month_dict["temp"], month_dict["rainy_days"])
 
 
@@ -99,7 +96,7 @@ def run_month(conditions, month_dict):
 
 
     #Tpau calculates margin per product
-    conditions["margin_per_doughnut"] = conditions["doughnut_sell_price"] - conditions["ingredient_cost_per_doughnut"]
+    conditions["margin_per_doughnut"] = conditions["doughnut_sell_price"] - conditions["ingredient_cost_per_product"]
 
     #Tpau calculates Turnover aka how much profit you make per nut x nuts sold QUESTION do the two turnover conditions need to be separate or can we use order of operations ()
     conditions["margin_doughnuts_monthly"] = conditions["margin_per_doughnut"] * conditions["actual_sold_monthly"]
@@ -130,8 +127,6 @@ def run_month(conditions, month_dict):
 
     
     conditions["capital"] += conditions["monthly_balance"]
-
-    conditions["ingredient_cost_per_doughnut"] *= variables["ingredient_cost_per_product"]
 
     print(print(json.dumps(conditions, indent=4, sort_keys=True)))
     return conditions
