@@ -2,6 +2,8 @@ import json
 import csv
 import copy
 import random
+import sklearn.linear_model
+import LinearRegression
 from math import floor
 
 
@@ -56,9 +58,15 @@ def weather_calculator(temp, rainy_days):
     # temp and rain effect on number bought. Obvs it doesnt like this unfinished code. This is where we need linear regression shizzle. 
     # will it be a diff multiplier for both variables? Or combined? Can't remember our rain factor?
 
-    # Number bought = -0.06667* Temp + 2.5
+    temperature_y = -0.06667* months["temp"] + 2.5
+    
+    #rainy_days_y = 1.3 * months["rainy days"] * actual_sold_monthly?
 
-    weighting =
+    lm = LinearRegression()
+    model = lm.fit(,)
+
+   #weighting = 
+
     return weighting
 
 def run_month(conditions, month_dict): 
@@ -78,11 +86,7 @@ def run_month(conditions, month_dict):
     
     # nuts people could buy (demand), based on proportion that will buy * how many they buy on average
     conditions["demand_that_month"] = conditions["will_buy"] * conditions["doughnuts_per_person"]
-
-    #'nuts made
-    conditions["doughnuts_made_monthly"] = conditions["proportion_doughnut"] * conditions["oven_capacity"]
-
-    
+   
     # We’ll begin with one oven, and if demand is +6000 of capicity, then new oven. this comes later in the order.
     conditions["demand_v_capacity"] = conditions["demand_that_month"] - conditions["doughnuts_capacity_monthly"]
 
@@ -116,7 +120,7 @@ def run_month(conditions, month_dict):
     conditions["monthly_balance"] = conditions["margin_doughnuts_monthly"] - conditions["total_fixed_costs"]
 
     #Tpau calculates Turnover aka how much profit you make per nut x nuts sold QUESTION do the two turnover conditions need to be separate or can we use order of operations ()
-    conditions["turnover"] = conditions["margin_per_doughnut"] * conditions["doughnuts_sold_monthly"]
+    conditions["turnover"] = conditions["margin_per_doughnut"] * conditions["actual_sold_monthly"]
 
 
     # how do we apply oven to the next month, so that costs and capacity increase that month too? 
